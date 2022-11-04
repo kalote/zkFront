@@ -2,20 +2,25 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Provider } from "zksync-web3";
 import { ethers } from "ethers";
-import { contractABI, contractAddress } from "../../lib/constants";
+import { contractABI, contractAddress } from "../../../lib/constants";
 
 type Data = {
-  greeting: string;
+  success: boolean;
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const { ethAddress } = req.query;
+  const provider = new Provider(process.env.NETWORK_URL);
   const wallet = new ethers.Wallet(<string>process.env.CONTRACT_PK);
   const signer = wallet.connect(provider);
   const contract = new ethers.Contract(contractAddress, contractABI, signer);
-  const getGreet = await contract.greet();
+  const mint = await contract.mint(
+    ethAddress,
+    ethers.utils.parseEther(<string>process.env.MINT_ON_CREATE_AMOUNT)
+  );
+  const minted = await mint.wait();
 
-  res.status(200).json({ greeting: getGreet });
+  res.status(200).json({ success: minted.status === 1 ? true : false });
 };
 
 export default handler;
