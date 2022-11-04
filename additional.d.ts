@@ -4,3 +4,13 @@
 interface Window {
   ethereum: any;
 }
+
+interface ContextProps {
+  children: React.ReactNode;
+}
+
+interface TwittContext {
+  connectWallet: (metamask?: Window.ethereum) => Promise<void>;
+  currentAccount: string;
+  balance: string;
+}

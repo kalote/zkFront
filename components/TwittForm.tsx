@@ -11,6 +11,10 @@ const style = {
 };
 
 const TwittForm = () => {
+  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
   return (
     <div className={style.wrapper}>
       <div className={style.content}>
@@ -22,7 +26,7 @@ const TwittForm = () => {
           />
         </div>
         <div className={style.textareaBlock}>
-          <form>
+          <form onSubmit={(e) => submitForm(e)}>
             <textarea
               placeholder="What's up?"
               className={style.textareaField}

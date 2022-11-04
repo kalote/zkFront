@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "../assets/logo.png";
 import { BigNumber, ethers } from "ethers";
@@ -9,6 +9,7 @@ import {
   AmountDTO,
   amount,
 } from "../lib/constants";
+import { TwittContext } from "../context/twittContext";
 
 const styles = {
   wrapper: `pt-4 w-full flex justify-between items-center fixed bg-[#2D242F] drop-shadow-lg`,
@@ -31,38 +32,14 @@ if (typeof window !== "undefined") {
 
 const Header = () => {
   const [selectedNav, setSelectedNav] = useState<string>("newsFeed");
-  const [currentAccount, setCurrentAccount] = useState<string>("");
-  const [balance, setBalance] = useState<BigNumber>();
-
-  const connectWallet = async (metamask = eth): Promise<void> => {
-    try {
-      if (!metamask) return alert("install MetaMask!");
-      const accounts = await metamask.request({
-        method: "eth_requestAccounts",
-      });
-      if (metamask.networkVersion !== 280) {
-        return alert("Please switch to zkSync test network");
-      }
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.error(error);
-      throw new Error("No ethereum object.");
-    }
-  };
+  const [username, setUsername] = useState<string>("");
+  const { connectWallet, currentAccount, balance } = useContext(
+    TwittContext
+  ) as TwittContext;
 
   useEffect(() => {
-    if (currentAccount) {
-      (async () => {
-        try {
-          const signer = new Web3Provider(window.ethereum).getSigner();
-          const contract = new Contract(contractAddress, contractABI, signer);
-          const balanceOf = await contract.balanceOf(currentAccount);
-          setBalance(balanceOf);
-        } catch (error) {
-          console.log(error);
-        }
-      })();
-    }
+    if (!currentAccount) return;
+    setUsername(formatAccount(currentAccount));
   }, [currentAccount]);
 
   const formatAccount = (addr: string): string => {
@@ -97,10 +74,8 @@ const Header = () => {
       <div className={styles.buttonContainer}>
         {currentAccount ? (
           <div className={`${styles.button} ${styles.buttonPadding}`}>
-            <div className={styles.buttonTextContainer}>
-              {formatAccount(currentAccount)}
-            </div>
-            {balance && <p>{ethers.utils.formatEther(balance)} ZTW</p>}
+            <div className={styles.buttonTextContainer}>{username}</div>
+            {balance && <p>{balance} ZTW</p>}
           </div>
         ) : (
           <div
