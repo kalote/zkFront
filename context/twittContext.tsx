@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import React, { useState, useEffect } from "react";
 import { contractABI, contractAddress } from "../lib/constants";
 

@@ -1,5 +1,12 @@
 import React from "react";
 
+export type TwittProps = {
+  id: number;
+  createdAt: string;
+  content: string;
+  authorAddr: string;
+};
+
 const Twitt = () => {
   return (
     <li>

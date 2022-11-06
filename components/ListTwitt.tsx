@@ -1,5 +1,5 @@
 import React from "react";
-import Twitt from "./Twitt";
+import Twitt, { TwittProps } from "./Twitt";
 import TwittForm from "./TwittForm";
 
 const styles = {
@@ -8,7 +8,13 @@ const styles = {
   ul: `list-none`,
 };
 
-const ListTwitt = () => {
+type ListProps = {
+  twitts: TwittProps[];
+};
+
+const ListTwitt: React.FC<ListProps> = (props) => {
+  console.log("props listTwitt");
+  console.log(props);
   return (
     <main role="main" className={styles.wrapper}>
       <div className={styles.content}>
