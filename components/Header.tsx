@@ -1,14 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "../assets/logo.png";
-import { BigNumber, ethers } from "ethers";
-import { Contract, Web3Provider } from "zksync-web3";
-import {
-  contractABI,
-  contractAddress,
-  AmountDTO,
-  amount,
-} from "../lib/constants";
 import { TwittContext } from "../context/twittContext";
 
 const styles = {
