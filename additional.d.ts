@@ -13,4 +13,5 @@ interface TwittContext {
   connectWallet: (metamask?: Window.ethereum) => Promise<void>;
   currentAccount: string;
   balance: string;
+  checkIfBalanceIsPositive: () => boolean;
 }

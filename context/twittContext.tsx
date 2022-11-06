@@ -77,12 +77,20 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
     }
   };
 
+  const checkIfBalanceIsPositive = () => {
+    if (parseFloat(balance) <= 0) {
+      return false;
+    }
+    return true;
+  };
+
   return (
     <TwittContext.Provider
       value={{
         currentAccount,
         connectWallet,
         balance,
+        checkIfBalanceIsPositive,
       }}
     >
       {children}

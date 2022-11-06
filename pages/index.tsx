@@ -30,7 +30,9 @@ const Home: NextPage<Props> = (props) => {
 export default Home;
 
 export async function getStaticProps() {
-  const twitts = await prisma.twitt.findMany();
+  let twitts = await prisma.twitt.findMany();
+
+  twitts = JSON.parse(JSON.stringify(twitts));
 
   return {
     props: { twitts },
