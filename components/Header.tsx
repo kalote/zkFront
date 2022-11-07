@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "../assets/logo.png";
 import { TwittContext } from "../context/twittContext";
+import { useRouter } from "next/router";
 
 const styles = {
   wrapper: `pt-4 w-full flex justify-between items-center fixed bg-[#2D242F] drop-shadow-lg`,
@@ -17,13 +18,8 @@ const styles = {
   buttonAccent: `bg-[#172A42] border border-[#163256] hover:border-[#234169] h-full rounded-2xl flex items-center justify-center text-[#E2A472]`,
 };
 
-let eth: any;
-if (typeof window !== "undefined") {
-  eth = window.ethereum;
-}
-
 const Header = () => {
-  const [selectedNav, setSelectedNav] = useState<string>("newsFeed");
+  const router = useRouter();
   const [username, setUsername] = useState<string>("");
   const { connectWallet, currentAccount, balance } = useContext(
     TwittContext
@@ -38,6 +34,10 @@ const Header = () => {
     return `${addr.substring(0, 5)}...${addr.slice(-4)}`;
   };
 
+  const handleClick = (where: string) => {
+    router.push(`${where}?addr=${currentAccount}`);
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.headerLogo}>
@@ -46,17 +46,17 @@ const Header = () => {
       <div className={styles.nav}>
         <div className={styles.navItemsContainer}>
           <div
-            onClick={() => setSelectedNav("newsFeed")}
+            onClick={() => handleClick("/")}
             className={`${styles.navItem} ${
-              selectedNav === "newsFeed" && styles.activeItem
+              router.pathname === "/" && styles.activeItem
             }`}
           >
-            Newsfeed
+            NewsFeed
           </div>
           <div
-            onClick={() => setSelectedNav("profile")}
+            onClick={() => handleClick("/profile")}
             className={`${styles.navItem} ${
-              selectedNav === "profile" && styles.activeItem
+              router.pathname === "/profile" && styles.activeItem
             }`}
           >
             Profile
