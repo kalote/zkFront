@@ -81,7 +81,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
     }
   };
 
-  const checkBalanceForTwitt = () => {
+  const checkIfBalanceIsEnoughForTwitt = () => {
     if (parseFloat(balance) <= COST_OF_TWITT) {
       return false;
     }
@@ -94,7 +94,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
         currentAccount,
         connectWallet,
         balance,
-        checkBalanceForTwitt,
+        checkIfBalanceIsEnoughForTwitt,
       }}
     >
       {children}
