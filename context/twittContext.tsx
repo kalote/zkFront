@@ -1,6 +1,10 @@
 import { ethers } from "ethers";
 import React, { useState, useEffect } from "react";
-import { contractABI, contractAddress } from "../lib/constants";
+import {
+  CONTRACT_ABI,
+  CONTRACT_ADDRESS,
+  COST_OF_TWITT,
+} from "../lib/constants";
 
 export const TwittContext = React.createContext<TwittContext | null>(null);
 
@@ -14,8 +18,8 @@ const getTwittContract = () => {
   const provider = new ethers.providers.Web3Provider(eth);
   const signer = provider.getSigner();
   const twittContract = new ethers.Contract(
-    contractAddress,
-    contractABI,
+    CONTRACT_ADDRESS,
+    CONTRACT_ABI,
     signer
   );
 
@@ -77,8 +81,8 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
     }
   };
 
-  const checkIfBalanceIsPositive = () => {
-    if (parseFloat(balance) <= 0) {
+  const checkBalanceForTwitt = () => {
+    if (parseFloat(balance) <= COST_OF_TWITT) {
       return false;
     }
     return true;
@@ -90,7 +94,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
         currentAccount,
         connectWallet,
         balance,
-        checkIfBalanceIsPositive,
+        checkBalanceForTwitt,
       }}
     >
       {children}

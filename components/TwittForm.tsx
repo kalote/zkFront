@@ -11,21 +11,20 @@ const style = {
   button: `h-10 rounded-full bg-[#E2A472] px-4 font-semibold text-black hover:bg-[#dd9258] focus:outline-none`,
   buttonContainer: `flex justify-end`,
   disabled: `disabled:opacity-25`,
-  loader: `absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[#333] opacity-25 rounded-2xl`,
+  loader: `absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[#333] opacity-50 rounded-2xl`,
 };
 
 const TwittForm = () => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { currentAccount, balance, checkIfBalanceIsPositive } = useContext(
-    TwittContext
-  ) as TwittContext;
+  const { currentAccount, balance, checkIfBalanceIsEnoughForTwitt } =
+    useContext(TwittContext) as TwittContext;
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    if (checkIfBalanceIsPositive()) {
+    if (checkIfBalanceIsEnoughForTwitt()) {
       try {
         const body = { currentAccount, content };
         await fetch(`/api/twitt`, {
