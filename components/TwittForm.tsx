@@ -1,8 +1,11 @@
+import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { TwittContext } from "../context/twittContext";
+import Icon from "./Icon";
 
 const style = {
+  container: `flex items-start justify-center mt-24 mb-16`,
   wrapper: `fixed w-[44rem] flex-shrink-0 rounded-2xl bg-[#392b3d] p-4 drop-shadow-lg`,
   content: `relative flex items-start`,
   imgProfile: `inline-block h-10 w-10 rounded-full`,
@@ -15,6 +18,7 @@ const style = {
 };
 
 const TwittForm = () => {
+  const router = useRouter();
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -32,6 +36,8 @@ const TwittForm = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        router.replace(router.asPath);
+        setContent("");
         setIsLoading(false);
       } catch (error) {
         console.error(error);
@@ -40,40 +46,39 @@ const TwittForm = () => {
   };
 
   return (
-    <div className={style.wrapper}>
-      <div className={style.content}>
-        {isLoading && (
-          <div className={style.loader}>
-            <BeatLoader size={15} loading={true} color={"#fff"} />
-          </div>
-        )}
-        <div>
-          <img
-            className={style.imgProfile}
-            src="https://pbs.twimg.com/profile_images/1121328878142853120/e-rpjoJi_bigger.png"
-            alt=""
-          />
-        </div>
-        <div className={style.textareaBlock}>
-          <form onSubmit={submitForm}>
-            <textarea
-              placeholder="What's up?"
-              className={style.textareaField}
-              onChange={(e) => setContent(e.target.value)}
-              maxLength={255}
-            />
-            <div className={style.buttonContainer}>
-              <button
-                type="submit"
-                className={`${style.button} ${
-                  !currentAccount || !balance ? style.disabled : ""
-                }`}
-                disabled={!currentAccount || !balance}
-              >
-                zkTwitt (20 ZTW)
-              </button>
+    <div className={style.container}>
+      <div className={style.wrapper}>
+        <div className={style.content}>
+          {isLoading && (
+            <div className={style.loader}>
+              <BeatLoader size={15} loading={true} color={"#fff"} />
             </div>
-          </form>
+          )}
+          <div>
+            <Icon addr={currentAccount} />
+          </div>
+          <div className={style.textareaBlock}>
+            <form onSubmit={submitForm}>
+              <textarea
+                placeholder="What's up?"
+                className={style.textareaField}
+                onChange={(e) => setContent(e.target.value)}
+                maxLength={255}
+                value={content}
+              />
+              <div className={style.buttonContainer}>
+                <button
+                  type="submit"
+                  className={`${style.button} ${
+                    !currentAccount || !balance ? style.disabled : ""
+                  }`}
+                  disabled={!currentAccount || !balance}
+                >
+                  zkTwitt (20 ZTW)
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

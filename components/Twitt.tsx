@@ -1,13 +1,15 @@
 import React from "react";
+import Icon from "./Icon";
 
-export type TwittProps = {
+export type TwittType = {
   id: number;
   createdAt: string;
   content: string;
   authorAddr: string;
 };
 
-const Twitt = () => {
+const Twitt: React.FC<TwittType> = ({ authorAddr, content, createdAt }) => {
+  const created = new Date(createdAt);
   return (
     <li>
       <article className="duration-350 transition ease-in-out hover:bg-[#493a4c]">
@@ -15,17 +17,13 @@ const Twitt = () => {
           <a href="#" className="group block flex-shrink-0">
             <div className="flex items-center">
               <div>
-                <img
-                  className="inline-block h-10 w-10 rounded-full"
-                  src="https://pbs.twimg.com/profile_images/1121328878142853120/e-rpjoJi_bigger.png"
-                  alt=""
-                />
+                <Icon addr={authorAddr} />
               </div>
               <div className="ml-3">
                 <p className="text-base font-medium leading-6 text-white">
-                  Sonali Hirave
+                  {authorAddr}
                   <span className="text-sm font-medium leading-5 text-gray-400 transition duration-150 ease-in-out group-hover:text-gray-300">
-                    @ShonaDesign . 16 April
+                    {" " + created.toDateString()}
                   </span>
                 </p>
               </div>
@@ -35,38 +33,8 @@ const Twitt = () => {
 
         <div className="pl-16">
           <p className="width-auto flex-shrink text-base font-medium text-white">
-            Day 07 of the challenge{" "}
-            <a href="#" className="text-blue-400">
-              #100DaysOfCode
-            </a>
-            I was wondering what I can do with{" "}
-            <a href="#" className="text-blue-400">
-              #tailwindcss
-            </a>
-            , so just started building Twitter UI using Tailwind and so far it
-            looks so promising. I will post my code after completion. [07/100]
-            <a href="#" className="text-blue-400">
-              {" "}
-              #WomenWhoCode #CodeNewbie
-            </a>
+            {content}
           </p>
-
-          <div className="pr-6 pt-3 md:flex-shrink">
-            <div
-              className="h-64 w-full rounded-lg bg-cover bg-center bg-no-repeat"
-              style={{
-                height: "200px",
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=448&amp;q=80)",
-              }}
-            >
-              <img
-                className="h-full w-full opacity-0"
-                src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=448&amp;q=80"
-                alt=""
-              />
-            </div>
-          </div>
 
           <div className="flex items-center py-4">
             <div className="duration-350 flex flex-1 items-center justify-center text-xs text-white text-gray-400 transition ease-in-out hover:text-green-400">

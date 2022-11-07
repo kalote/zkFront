@@ -2,15 +2,15 @@ import prisma from "../../lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Header from "../../components/Header";
-import MyTwitts from "../../components/MyTwitts";
-import { TwittProps } from "../../components/Twitt";
+import { TwittType } from "../../components/Twitt";
+import ListTwitt from "../../components/ListTwitt";
 
 const style = {
   wrapper: `bg-[#2D242F] text-white select-none flex flex-col justify-start`,
 };
 
 type Props = {
-  myTwitts: TwittProps[] | [];
+  myTwitts: TwittType[] | [];
 };
 
 const Profile: NextPage<Props> = (props) => {
@@ -21,7 +21,7 @@ const Profile: NextPage<Props> = (props) => {
       </Head>
       <div className={style.wrapper}>
         <Header />
-        <MyTwitts twitts={props.myTwitts} />
+        <ListTwitt twitts={props.myTwitts} />
       </div>
     </>
   );
