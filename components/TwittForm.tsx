@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { TwittContext } from "../context/twittContext";
+import { COST_OF_TWITT } from "../lib/constants";
 import Icon from "./Icon";
 
 const style = {
@@ -22,13 +23,14 @@ const TwittForm = () => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { currentAccount, balance, checkIfBalanceIsEnoughForTwitt } =
-    useContext(TwittContext) as TwittContext;
+  const { currentAccount, balance, checkIfBalanceIsEnough } = useContext(
+    TwittContext
+  ) as TwittContext;
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    if (checkIfBalanceIsEnoughForTwitt()) {
+    if (checkIfBalanceIsEnough(COST_OF_TWITT)) {
       try {
         const body = { currentAccount, content };
         await fetch(`/api/twitt`, {
@@ -36,9 +38,9 @@ const TwittForm = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
-        router.replace(router.asPath);
         setContent("");
         setIsLoading(false);
+        router.replace(router.asPath);
       } catch (error) {
         console.error(error);
       }

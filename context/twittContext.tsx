@@ -1,10 +1,7 @@
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
-import {
-  CONTRACT_ABI,
-  CONTRACT_ADDRESS,
-  COST_OF_TWITT,
-} from "../lib/constants";
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../lib/constants";
 
 export const TwittContext = React.createContext<TwittContext | null>(null);
 
@@ -29,16 +26,18 @@ const getTwittContract = () => {
 export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState<string>("");
   const [balance, setBalance] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
   useEffect(() => {
-    if (currentAccount) {
+    if (currentAccount && !isLoading) {
       getBalance();
     }
-  }, [currentAccount]);
+  }, [currentAccount, isLoading]);
 
   const getBalance = async () => {
     if (currentAccount) {
@@ -54,6 +53,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
 
   const connectWallet = async (metamask = eth): Promise<void> => {
     try {
+      setIsLoading(true);
       if (!metamask) return alert("install MetaMask!");
       const accounts = await metamask.request({
         method: "eth_requestAccounts",
@@ -61,7 +61,15 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
       if (metamask.networkVersion !== "280") {
         return alert("Please switch to zkSync test network");
       }
+      const check = await isAlreadyHolder(accounts[0]);
+      console.log(check);
+      if (!check) {
+        await fundAccount(accounts[0]);
+        await createHolder(accounts[0]);
+      }
       setCurrentAccount(accounts[0]);
+      setIsLoading(false);
+      router.push("/");
     } catch (error) {
       console.error(error);
       throw new Error("No ethereum object.");
@@ -81,11 +89,38 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
     }
   };
 
-  const checkIfBalanceIsEnoughForTwitt = () => {
-    if (parseFloat(balance) <= COST_OF_TWITT) {
+  const checkIfBalanceIsEnough = (purpose: number) => {
+    if (parseFloat(balance) <= purpose) {
       return false;
     }
     return true;
+  };
+
+  const isAlreadyHolder = async (addr: string): Promise<boolean> => {
+    // mint 100 ZTW
+    const result = await fetch(`/api/holder/${addr}`, {
+      method: "GET",
+    });
+    const data = await result.json();
+    console.log(data);
+    return data?.isHolder;
+  };
+
+  const fundAccount = async (addr: string) => {
+    // mint 100 ZTW
+    await fetch(`/api/mint/${addr}`, {
+      method: "GET",
+    });
+  };
+
+  const createHolder = async (addr: string) => {
+    // update holder table
+    const body = { addr };
+    await fetch(`/api/holder`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
   };
 
   return (
@@ -94,7 +129,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
         currentAccount,
         connectWallet,
         balance,
-        checkIfBalanceIsEnoughForTwitt,
+        checkIfBalanceIsEnough,
       }}
     >
       {children}

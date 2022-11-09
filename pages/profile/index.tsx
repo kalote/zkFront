@@ -30,16 +30,19 @@ const Profile: NextPage<Props> = (props) => {
 export default Profile;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let myTwitts: never[] = [];
-  if (context.query.addr) {
-    let myTwitts = await prisma.twitt.findMany({
-      where: {
-        authorAddr: context.query.addr as string,
-      },
-    });
-
-    myTwitts = JSON.parse(JSON.stringify(myTwitts));
+  const currentAddr = context.query.addr;
+  if (!currentAddr || currentAddr === "") {
+    return {
+      props: {},
+    };
   }
+  let myTwitts = await prisma.twitt.findMany({
+    where: {
+      authorAddr: currentAddr as string,
+    },
+  });
+
+  myTwitts = JSON.parse(JSON.stringify(myTwitts));
 
   return {
     props: { myTwitts },
