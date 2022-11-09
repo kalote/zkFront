@@ -8,15 +8,27 @@ datasource db {
 }
 
 model twitt {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
-  content    String   @db.VarChar(255)
-  authorAddr String   @db.VarChar(64)
-  like       Int?     @default(0)
-  retwitt    Int?     @default(0)
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now()) @db.Timestamp(6)
+  content        String           @db.VarChar(255)
+  authorAddr     String           @db.VarChar(64)
+  like           Int?             @default(0)
+  retwitt        Int?             @default(0)
+  holders_twitts holders_twitts[]
 }
 
 model holder {
-  id   Int     @id @default(autoincrement())
-  addr String? @db.VarChar(60)
+  addr           String           @id @db.VarChar(60)
+  holders_twitts holders_twitts[]
+}
+
+model holders_twitts {
+  holder_id String @db.VarChar(60)
+  twitt_id  Int
+  like      Int    @default(0)
+  retwitt   Int    @default(0)
+  holder    holder @relation(fields: [holder_id], references: [addr], onDelete: NoAction)
+  twitt     twitt  @relation(fields: [twitt_id], references: [id], onDelete: NoAction)
+
+  @@id([holder_id, twitt_id])
 }

@@ -1,4 +1,7 @@
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useContext } from "react";
+import { TwittContext } from "../context/twittContext";
+import { COST_OF_LIKE, COST_OF_RETWITT } from "../lib/constants";
 import Icon from "./Icon";
 
 export type TwittType = {
@@ -11,13 +14,50 @@ export type TwittType = {
 };
 
 const Twitt: React.FC<TwittType> = ({
+  id,
   authorAddr,
   content,
   createdAt,
   like,
   retwitt,
 }) => {
+  const router = useRouter();
+  const { currentAccount, checkIfBalanceIsEnough } = useContext(
+    TwittContext
+  ) as TwittContext;
   const created = new Date(createdAt);
+
+  const likeClick = async () => {
+    if (checkIfBalanceIsEnough(COST_OF_LIKE)) {
+      try {
+        const body = { ethAddr: currentAccount, twittId: id };
+        await fetch(`/api/like`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        router.replace(router.asPath);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const retwittClick = async () => {
+    if (checkIfBalanceIsEnough(COST_OF_LIKE)) {
+      try {
+        const body = { ethAddr: currentAccount, twittId: id };
+        await fetch(`/api/retwitt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        router.replace(router.asPath);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
   return (
     <li>
       <article className="duration-350 transition ease-in-out hover:bg-[#493a4c]">
@@ -45,7 +85,10 @@ const Twitt: React.FC<TwittType> = ({
           </p>
 
           <div className="flex items-center py-4">
-            <div className="duration-350 flex flex-1 cursor-pointer items-center justify-center text-xs text-white text-gray-400 transition ease-in-out hover:text-green-400">
+            <div
+              onClick={() => retwittClick()}
+              className="duration-350 flex flex-1 cursor-pointer items-center justify-center text-xs text-white text-gray-400 transition ease-in-out hover:text-green-400"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -57,7 +100,10 @@ const Twitt: React.FC<TwittType> = ({
               </svg>
               {retwitt}
             </div>
-            <div className="duration-350 flex flex-1 cursor-pointer items-center justify-center text-xs text-white text-gray-400 transition ease-in-out hover:text-red-600">
+            <div
+              onClick={() => likeClick()}
+              className="duration-350 flex flex-1 cursor-pointer items-center justify-center text-xs text-white text-gray-400 transition ease-in-out hover:text-red-600"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -78,3 +124,6 @@ const Twitt: React.FC<TwittType> = ({
 };
 
 export default Twitt;
+function checkIfBalanceIsEnough(COST_OF_TWITT: any) {
+  throw new Error("Function not implemented.");
+}
