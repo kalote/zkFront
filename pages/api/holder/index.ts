@@ -3,8 +3,8 @@ import prisma from "../../../lib/prisma";
 
 const re = new RegExp(/^0x[a-fA-F0-9]{40}$/g);
 
-// POST /api/post
-// Optional fields in body: content
+// POST /api/holder
+// create a new holder
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse

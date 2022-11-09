@@ -8,6 +8,8 @@ type Data = {
   success: boolean;
 };
 
+// GET /api/mint/[ethAddr]
+// mint the initial amount of token to ethAddr
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { ethAddress } = req.query;
   const provider = new Provider(process.env.NETWORK_URL);

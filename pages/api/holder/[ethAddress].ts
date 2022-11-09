@@ -4,7 +4,8 @@ import prisma from "../../../lib/prisma";
 type Data = {
   isHolder: boolean;
 };
-
+// GET /api/holder/[ethAddr]
+// Return wether the ethAddr is already registered
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { ethAddress } = req.query;
   if (ethAddress === undefined) {
