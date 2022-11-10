@@ -14,4 +14,7 @@ interface TwittContext {
   currentAccount: string;
   balance: string;
   checkIfBalanceIsEnough: (number) => boolean;
+  twittOnChain: (number) => void;
+  likeOnChain: (number) => void;
+  retwittOnChain: (number) => void;
 }

@@ -1,7 +1,15 @@
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../lib/constants";
+import {
+  COST_OF_LIKE,
+  COST_OF_RETWITT,
+  COST_OF_TWITT,
+  ERC20_CONTRACT_ABI,
+  ERC20_CONTRACT_ADDRESS,
+  MAIN_CONTRACT_ABI,
+  MAIN_CONTRACT_ADDRESS,
+} from "../lib/constants";
 
 export const TwittContext = React.createContext<TwittContext | null>(null);
 
@@ -11,16 +19,28 @@ if (typeof window !== "undefined") {
   eth = window.ethereum;
 }
 
-const getTwittContract = () => {
+const getERC20TwittContract = () => {
   const provider = new ethers.providers.Web3Provider(eth);
   const signer = provider.getSigner();
   const twittContract = new ethers.Contract(
-    CONTRACT_ADDRESS,
-    CONTRACT_ABI,
+    ERC20_CONTRACT_ADDRESS,
+    ERC20_CONTRACT_ABI,
     signer
   );
 
   return twittContract;
+};
+
+const getMainTwittContract = () => {
+  const provider = new ethers.providers.Web3Provider(eth);
+  const signer = provider.getSigner();
+  const mainContract = new ethers.Contract(
+    MAIN_CONTRACT_ADDRESS,
+    MAIN_CONTRACT_ABI,
+    signer
+  );
+
+  return mainContract;
 };
 
 export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
@@ -42,7 +62,7 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
   const getBalance = async () => {
     if (currentAccount) {
       try {
-        const contract = getTwittContract();
+        const contract = getERC20TwittContract();
         const balanceOf = await contract.balanceOf(currentAccount);
         setBalance(ethers.utils.formatEther(balanceOf));
       } catch (error) {
@@ -58,11 +78,10 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
       const accounts = await metamask.request({
         method: "eth_requestAccounts",
       });
-      if (metamask.networkVersion !== "280") {
-        return alert("Please switch to zkSync test network");
+      if (metamask.networkVersion !== "80001") {
+        return alert("Please switch to Polygon - Mumbai test network");
       }
       const check = await isAlreadyHolder(accounts[0]);
-      console.log(check);
       if (!check) {
         await fundAccount(accounts[0]);
         await createHolder(accounts[0]);
@@ -97,7 +116,6 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
   };
 
   const isAlreadyHolder = async (addr: string): Promise<boolean> => {
-    // mint 100 ZTW
     const result = await fetch(`/api/holder/${addr}`, {
       method: "GET",
     });
@@ -123,6 +141,61 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
     });
   };
 
+  const approveExpense = async (cost: number) => {
+    try {
+      const erc20Contract = getERC20TwittContract();
+      const approveTx = await erc20Contract.approve(
+        MAIN_CONTRACT_ADDRESS,
+        ethers.utils.parseEther(`${cost}`)
+      );
+      await approveTx.wait();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const twittOnChain = async (id: number) => {
+    if (currentAccount) {
+      try {
+        await approveExpense(COST_OF_TWITT);
+        const mainContract = getMainTwittContract();
+        const twitt = await mainContract.tweet(id);
+        await twitt.wait();
+        await getBalance();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const likeOnChain = async (id: number) => {
+    if (currentAccount) {
+      try {
+        await approveExpense(COST_OF_LIKE);
+        const mainContract = getMainTwittContract();
+        const twitt = await mainContract.like(id);
+        await twitt.wait();
+        await getBalance();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const retwittOnChain = async (id: number) => {
+    if (currentAccount) {
+      try {
+        await approveExpense(COST_OF_RETWITT);
+        const mainContract = getMainTwittContract();
+        const twitt = await mainContract.retweet(id);
+        await twitt.wait();
+        await getBalance();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <TwittContext.Provider
       value={{
@@ -130,6 +203,9 @@ export const TwittProvider: React.FC<ContextProps> = ({ children }) => {
         connectWallet,
         balance,
         checkIfBalanceIsEnough,
+        twittOnChain,
+        likeOnChain,
+        retwittOnChain,
       }}
     >
       {children}

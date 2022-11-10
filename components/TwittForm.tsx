@@ -23,9 +23,8 @@ const TwittForm = () => {
   const [content, setContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { currentAccount, balance, checkIfBalanceIsEnough } = useContext(
-    TwittContext
-  ) as TwittContext;
+  const { currentAccount, balance, checkIfBalanceIsEnough, twittOnChain } =
+    useContext(TwittContext) as TwittContext;
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,11 +32,13 @@ const TwittForm = () => {
     if (checkIfBalanceIsEnough(COST_OF_TWITT)) {
       try {
         const body = { currentAccount, content };
-        await fetch(`/api/twitt`, {
+        const twittCreated = await fetch(`/api/twitt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        const twittData = await twittCreated.json();
+        await twittOnChain(twittData.id);
         setContent("");
         setIsLoading(false);
         router.replace(router.asPath);

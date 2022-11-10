@@ -2,7 +2,7 @@ import React from "react";
 import Twitt, { TwittType } from "./Twitt";
 
 const styles = {
-  wrapper: `flex items-start justify-center h-full`,
+  wrapper: `flex items-start justify-center h-full min-h-screen`,
   content: `w-[44rem] border-[#E2A472]`,
   ul: `list-none`,
   title: `text-xl text-center p-12 h-screen`,

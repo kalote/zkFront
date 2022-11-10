@@ -22,14 +22,18 @@ const Twitt: React.FC<TwittType> = ({
   retwitt,
 }) => {
   const router = useRouter();
-  const { currentAccount, checkIfBalanceIsEnough } = useContext(
-    TwittContext
-  ) as TwittContext;
+  const {
+    currentAccount,
+    checkIfBalanceIsEnough,
+    likeOnChain,
+    retwittOnChain,
+  } = useContext(TwittContext) as TwittContext;
   const created = new Date(createdAt);
 
   const likeClick = async () => {
     if (checkIfBalanceIsEnough(COST_OF_LIKE)) {
       try {
+        await likeOnChain(id);
         const body = { ethAddr: currentAccount, twittId: id };
         await fetch(`/api/like`, {
           method: "POST",
@@ -46,6 +50,7 @@ const Twitt: React.FC<TwittType> = ({
   const retwittClick = async () => {
     if (checkIfBalanceIsEnough(COST_OF_LIKE)) {
       try {
+        await retwittOnChain(id);
         const body = { ethAddr: currentAccount, twittId: id };
         await fetch(`/api/retwitt`, {
           method: "POST",
