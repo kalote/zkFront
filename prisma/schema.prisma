@@ -12,6 +12,8 @@ model twitt {
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
   content        String           @db.VarChar(255)
   authorAddr     String           @db.VarChar(64)
+  hash           String           @db.VarChar(255)
+  tokenId        String           @db.VarChar(255)
   like           Int?             @default(0)
   retwitt        Int?             @default(0)
   holders_twitts holders_twitts[]

@@ -5,6 +5,7 @@ import { TwittContext } from "../context/twittContext";
 import { COST_OF_TWITT } from "../lib/constants";
 import Icon from "./Icon";
 
+
 const style = {
   container: `flex items-start justify-center mt-24 mb-16`,
   wrapper: `fixed w-[44rem] flex-shrink-0 rounded-2xl bg-[#392b3d] p-4 drop-shadow-lg`,
@@ -31,14 +32,18 @@ const TwittForm = () => {
     setIsLoading(true);
     if (checkIfBalanceIsEnough(COST_OF_TWITT)) {
       try {
-        const body = { currentAccount, content };
-        const twittCreated = await fetch(`/api/twitt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const twittData = await twittCreated.json();
-        await twittOnChain(twittData.id);
+        
+        //pre compute an hash (use hash as a token id)
+        const twittData = await computeTokenId(currentAccount, content);
+
+        await twittOnChain(twittData.tokenId);
+
+        /*
+          save in database only when twitt has been created onchain
+          onchain twitt can be rejected 
+        */
+        await saveInDB(twittData);
+
         setContent("");
         setIsLoading(false);
         router.replace(router.asPath);
@@ -47,6 +52,28 @@ const TwittForm = () => {
       }
     }
   };
+
+  const computeTokenId = async (currentAccount: string, content: string) => {
+    //pre compute an hash (use hash as a token id)
+    const body = { currentAccount, content };
+    const preGenerationReq = await fetch(`/api/twitt/pre`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const twittContent = await preGenerationReq.json();
+    console.log(`hash of the tweet ${twittContent.hash}, id ${twittContent.tokenId}`);
+    return twittContent;
+  }
+
+  const saveInDB = async (body :any) => {
+    //save in database only when twitt has been created onchain
+    const twittCreated = await fetch(`/api/twitt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  }
 
   return (
     <div className={style.container}>
